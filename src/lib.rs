@@ -15,13 +15,16 @@ mod receiver;
 near_sdk::setup_alloc!();
 
 /// Access key allowance for linkdrop keys.
-/// 0.2 Near
-const ACCESS_KEY_ALLOWANCE: u128 = 200_000_000_000_000_000_000_000;
-
-const GAS_FOR_NFT_TRANSFER: Gas = 30_000_000_000_000;
-
+/// 0.02 NEAR, actual amount needed for claiming NFT
+const ACCESS_KEY_ALLOWANCE: u128 = 20_000_000_000_000_000_000_000;
+/// (0.2 NEAR), this is just for access key allowance
+/// since otherwise it raises NotEnoughAllowance error. 
+/// Will NOT be used actually
+const CLAIM_ALLOWANCE: u128 = 10 * ACCESS_KEY_ALLOWANCE;
 /// 0.1 Near
 const STORAGE_AMOUNT: u128 = 100_000_000_000_000_000_000_000;
+
+const GAS_FOR_NFT_TRANSFER: Gas = 30_000_000_000_000;
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
@@ -98,7 +101,7 @@ impl Contract {
         );
         Promise::new(env::current_account_id()).add_access_key(
             pk,
-            ACCESS_KEY_ALLOWANCE,
+            CLAIM_ALLOWANCE,
             env::current_account_id(),
             b"claim_nft".to_vec(),
         )
